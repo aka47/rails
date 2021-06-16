@@ -244,7 +244,7 @@ class HostAuthorizationTest < ActionDispatch::IntegrationTest
     }
 
     assert_response :forbidden
-    assert_match "Blocked host: attacker.com#x.example.com", response.body
+    assert_match "Blocked host: attacker.com", response.body
   end
 
   test "blocks requests to similar host" do
