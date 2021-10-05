@@ -2,12 +2,9 @@
 
 require "abstract_unit"
 
-class URITest < ActiveSupport::TestCase
-  def setup
-  end
-
-  test "build_from_string" do
-    uri = ActionDispatch::Http::URI.build_from_string("http://myapp.test/page?id#me")
+class URLTest < ActiveSupport::TestCase
+  test "create new url" do
+    uri = ActionDispatch::Http::URL.new("http://myapp.test/page?id#me")
     assert_equal uri.to_s, "http://myapp.test/page?id#me"
     assert_equal uri.scheme, "http"
     assert_equal uri.protocol, "http://"
@@ -16,8 +13,15 @@ class URITest < ActiveSupport::TestCase
     assert_equal uri.fragment, "me"
   end
 
+  test "create with ipv6" do
+    uri = ActionDispatch::Http::URL.new("http://2001:0db8:85a3:0000:0000:8a2e:0370:7334")
+    assert_equal uri.to_s, "http://[2001:0db8:85a3:0000:0000:8a2e:0370:7334]"
+    uri = ActionDispatch::Http::URL.new("http://2001:0db8:85a3:0000:0000:8a2e:0370:8a2e:3000/home")
+    assert_equal uri.to_s, "http://[2001:0db8:85a3:0000:0000:8a2e:0370:8a2e]:3000/home"
+  end
+
   test "build/change uri after creation" do
-    uri = ActionDispatch::Http::URI.build_from_string("http://myapp.test/page?id#me")
+    uri = ActionDispatch::Http::URL.new("http://myapp.test/page?id#me")
     uri.port = 444
 
     assert_equal false, uri.standard_port?
@@ -27,15 +31,8 @@ class URITest < ActiveSupport::TestCase
     assert_equal "we.are:444", uri.host_with_port
   end
 
-  test "build_from_faulty_string" do
-    uri = ActionDispatch::Http::URI.build_from_faulty_string("http://2001:0db8:85a3:0000:0000:8a2e:0370:7334")
-    assert_equal uri.to_s, "http://[2001:0db8:85a3:0000:0000:8a2e:0370:7334]"
-    uri = ActionDispatch::Http::URI.build_from_faulty_string(":")
-    assert_equal uri.to_s, ""
-  end
-
   test "extract domain and subdomains" do
-    uri = ActionDispatch::Http::URI.build_from_string("http://sub.do.main.app.test/")
+    uri = ActionDispatch::Http::URL.new("http://sub.do.main.app.test/")
     assert_equal "sub.do.main", uri.subdomain
     assert_equal "sub.do", uri.subdomain(2)
     assert_equal "sub", uri.subdomain(3)

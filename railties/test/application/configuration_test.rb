@@ -289,11 +289,10 @@ module ApplicationTests
       app "development"
 
       assert_equal "https://rails.test", Rails.configuration.application_url
-      assert_instance_of ActionDispatch::Http::URI, Rails.application.url
+      assert_instance_of ActionDispatch::Http::URL, Rails.application.url
       assert_equal "https://rails.test", Rails.application.url.to_s
-      assert_equal({ host: "rails.test", protocol: "https" }, Rails.application.default_url_options)
-      assert_equal({ host: "rails.test", protocol: "https" }, Rails.application.default_url_options)
-      assert_equal({ host: "rails.test", protocol: "https" }, Rails.application.config.action_mailer.default_url_options)
+      assert_equal({ host: "rails.test", protocol: "https", port: 443 }, Rails.application.default_url_options)
+      assert_equal({ host: "rails.test", protocol: "https", port: 443 }, Rails.application.config.action_mailer.default_url_options)
     end
 
     test "Rails.public_path should be a Pathname" do

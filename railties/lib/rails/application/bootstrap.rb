@@ -4,7 +4,7 @@ require "fileutils"
 require "active_support/notifications"
 require "active_support/dependencies"
 require "active_support/descendants_tracker"
-require "action_dispatch/http/uri"
+require "action_dispatch/http/url"
 require "rails/secrets"
 
 module Rails
@@ -93,9 +93,10 @@ module Rails
       # Sets the Rails.application.url config
       initializer :initialize_url, group: :all do
         if config.application_url
-          Rails.application.url = ActionDispatch::Http::URI.build_from_string(config.application_url)
+          url = ActionDispatch::Http::URL.new(config.application_url)
+          Rails.application.url = url
           if Rails.application.default_url_options.blank?
-            Rails.application.default_url_options = { host: Rails.application.url.host, protocol: Rails.application.url.scheme }
+            Rails.application.default_url_options = { host: url.host, protocol: url.scheme, port: url.port }
           end
         end
       end

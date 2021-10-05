@@ -47,9 +47,10 @@ module ActionDispatch
     autoload_under "http" do
       autoload :ContentSecurityPolicy
       autoload :PermissionsPolicy
-      autoload :Request
       autoload :Response
+      autoload :URL
     end
+    autoload :Request
   end
 
   autoload_under "middleware" do

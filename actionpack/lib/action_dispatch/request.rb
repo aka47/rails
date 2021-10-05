@@ -11,7 +11,7 @@ require "action_dispatch/http/mime_negotiation"
 require "action_dispatch/http/parameters"
 require "action_dispatch/http/filter_parameters"
 require "action_dispatch/http/upload"
-require "action_dispatch/http/url"
+require "action_dispatch/request/build_url_from_request"
 require "active_support/core_ext/array/conversions"
 
 module ActionDispatch
@@ -21,7 +21,7 @@ module ActionDispatch
     include ActionDispatch::Http::MimeNegotiation
     include ActionDispatch::Http::Parameters
     include ActionDispatch::Http::FilterParameters
-    include ActionDispatch::Http::URL
+    include ActionDispatch::Request::BuildUrlFromRequest
     include ActionDispatch::ContentSecurityPolicy::Request
     include ActionDispatch::PermissionsPolicy::Request
     include Rack::Request::Env
