@@ -10,12 +10,12 @@ class ShowExceptionsTest < ActionDispatch::IntegrationTest
       when "/not_found"
         raise AbstractController::ActionNotFound
       when "/invalid_mimetype"
-        raise ActionDispatch::Http::MimeNegotiation::InvalidType
+        raise ActionDispatch::Request::MimeNegotiation::InvalidType
       when "/bad_params", "/bad_params.json"
         begin
           raise StandardError.new
         rescue
-          raise ActionDispatch::Http::Parameters::ParseError
+          raise ActionDispatch::Request::Parameters::ParseError
         end
       when "/method_not_allowed"
         raise ActionController::MethodNotAllowed, "PUT"

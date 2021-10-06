@@ -12,11 +12,11 @@ module ActionDispatch
       "ActionController::UnknownHttpMethod"                => :method_not_allowed,
       "ActionController::NotImplemented"                   => :not_implemented,
       "ActionController::UnknownFormat"                    => :not_acceptable,
-      "ActionDispatch::Http::MimeNegotiation::InvalidType" => :not_acceptable,
+      "ActionDispatch::Request::MimeNegotiation::InvalidType" => :not_acceptable,
       "ActionController::MissingExactTemplate"             => :not_acceptable,
       "ActionController::InvalidAuthenticityToken"         => :unprocessable_entity,
       "ActionController::InvalidCrossOriginRequest"        => :unprocessable_entity,
-      "ActionDispatch::Http::Parameters::ParseError"       => :bad_request,
+      "ActionDispatch::Request::Parameters::ParseError"    => :bad_request,
       "ActionController::BadRequest"                       => :bad_request,
       "ActionController::ParameterMissing"                 => :bad_request,
       "Rack::QueryParser::ParameterTypeError"              => :bad_request,
@@ -38,7 +38,7 @@ module ActionDispatch
 
     cattr_accessor :silent_exceptions, default: [
       "ActionController::RoutingError",
-      "ActionDispatch::Http::MimeNegotiation::InvalidType"
+      "ActionDispatch::Request::MimeNegotiation::InvalidType"
     ]
 
     attr_reader :backtrace_cleaner, :exception, :wrapped_causes, :line_number, :file

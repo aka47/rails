@@ -1,7 +1,10 @@
 # frozen_string_literal: true
 
 require "active_support/core_ext/module/attribute_accessors"
-require "action_dispatch/http/filter_redirect"
+require "action_dispatch/response/filter_redirect"
+require "action_dispatch/response/header"
+require "action_dispatch/response/buffer"
+require "action_dispatch/response/rack_body"
 require "action_dispatch/http/cache"
 require "monitor"
 
@@ -35,29 +38,6 @@ module ActionDispatch # :nodoc:
   #    end
   #  end
   class Response
-    class Header < DelegateClass(Hash) # :nodoc:
-      def initialize(response, header)
-        @response = response
-        super(header)
-      end
-
-      def []=(k, v)
-        if @response.sending? || @response.sent?
-          raise ActionDispatch::IllegalStateError, "header already sent"
-        end
-
-        super
-      end
-
-      def merge(other)
-        self.class.new @response, __getobj__.merge(other)
-      end
-
-      def to_hash
-        __getobj__.dup
-      end
-    end
-
     # The request that the response is responding to.
     attr_accessor :request
 
@@ -103,61 +83,9 @@ module ActionDispatch # :nodoc:
     alias :_cache_control :cache_control
     alias :_cache_control= :cache_control=
 
-    include ActionDispatch::Http::FilterRedirect
+    include ActionDispatch::Response::FilterRedirect
     include ActionDispatch::Http::Cache::Response
     include MonitorMixin
-
-    class Buffer # :nodoc:
-      def initialize(response, buf)
-        @response = response
-        @buf      = buf
-        @closed   = false
-        @str_body = nil
-      end
-
-      def body
-        @str_body ||= begin
-          buf = +""
-          each { |chunk| buf << chunk }
-          buf
-        end
-      end
-
-      def write(string)
-        raise IOError, "closed stream" if closed?
-
-        @str_body = nil
-        @response.commit!
-        @buf.push string
-      end
-
-      def each(&block)
-        if @str_body
-          return enum_for(:each) unless block_given?
-
-          yield @str_body
-        else
-          each_chunk(&block)
-        end
-      end
-
-      def abort
-      end
-
-      def close
-        @response.commit!
-        @closed = true
-      end
-
-      def closed?
-        @closed
-      end
-
-      private
-        def each_chunk(&block)
-          @buf.each(&block)
-        end
-    end
 
     def self.create(status = 200, header = {}, body = [], default_headers: self.default_headers)
       header = merge_default_headers(header, default_headers)
@@ -174,7 +102,7 @@ module ActionDispatch # :nodoc:
     def initialize(status = 200, header = {}, body = [])
       super()
 
-      @header = Header.new(self, header)
+      @header = ActionDispatch::Response::Header.new(self, header)
 
       self.body, self.status = body, status
 
@@ -469,7 +397,7 @@ module ActionDispatch # :nodoc:
     end
 
     def build_buffer(response, body)
-      Buffer.new response, body
+      ActionDispatch::Response::Buffer.new response, body
     end
 
     def munge_body_object(body)
@@ -484,42 +412,6 @@ module ActionDispatch # :nodoc:
                        ct.charset || self.class.default_charset)
     end
 
-    class RackBody
-      def initialize(response)
-        @response = response
-      end
-
-      def each(*args, &block)
-        @response.each(*args, &block)
-      end
-
-      def close
-        # Rack "close" maps to Response#abort, and *not* Response#close
-        # (which is used when the controller's finished writing)
-        @response.abort
-      end
-
-      def body
-        @response.body
-      end
-
-      def respond_to?(method, include_private = false)
-        if method.to_sym == :to_path
-          @response.stream.respond_to?(method)
-        else
-          super
-        end
-      end
-
-      def to_path
-        @response.stream.to_path
-      end
-
-      def to_ary
-        nil
-      end
-    end
-
     def handle_no_content!
       if NO_CONTENT_CODES.include?(@status)
         @header.delete CONTENT_TYPE
@@ -531,7 +423,7 @@ module ActionDispatch # :nodoc:
       if NO_CONTENT_CODES.include?(status)
         [status, header, []]
       else
-        [status, header, RackBody.new(self)]
+        [status, header, ActionDispatch::Response::RackBody.new(self)]
       end
     end
   end

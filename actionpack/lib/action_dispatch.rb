@@ -47,8 +47,13 @@ module ActionDispatch
     autoload_under "http" do
       autoload :ContentSecurityPolicy
       autoload :PermissionsPolicy
-      autoload :Response
       autoload :URL
+    end
+
+    autoload :Response
+    class Response
+      extend ActiveSupport::Autoload
+      autoload :FilterRedirect
     end
     autoload :Request
   end
