@@ -3,7 +3,7 @@
 require "active_support/core_ext/module/attribute_accessors"
 
 module ActionDispatch
-  module Http
+  class Request
     module MimeNegotiation
       extend ActiveSupport::Concern
 
@@ -11,7 +11,7 @@ module ActionDispatch
 
       RESCUABLE_MIME_FORMAT_ERRORS = [
         ActionController::BadRequest,
-        ActionDispatch::Http::Parameters::ParseError,
+        ActionDispatch::Request::Parameters::ParseError,
       ]
 
       included do

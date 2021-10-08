@@ -78,7 +78,7 @@ class DebugExceptionsTest < ActionDispatch::IntegrationTest
       when "/unprocessable_entity"
         raise ActionController::InvalidAuthenticityToken
       when "/invalid_mimetype"
-        raise ActionDispatch::Http::MimeNegotiation::InvalidType
+        raise ActionDispatch::Request::MimeNegotiation::InvalidType
       when "/not_found_original_exception"
         begin
           raise AbstractController::ActionNotFound.new
@@ -218,7 +218,7 @@ class DebugExceptionsTest < ActionDispatch::IntegrationTest
     get "/invalid_mimetype", headers: { "Accept" => "text/html,*", "action_dispatch.show_exceptions" => true }
     assert_response 406
     assert_match(/<body>/, body)
-    assert_match(/ActionDispatch::Http::MimeNegotiation::InvalidType/, body)
+    assert_match(/ActionDispatch::Request::MimeNegotiation::InvalidType/, body)
   end
 
   test "rescue with text error for xhr request" do
@@ -315,7 +315,7 @@ class DebugExceptionsTest < ActionDispatch::IntegrationTest
     assert_response 406
     assert_no_match(/<body>/, body)
     assert_equal "application/json", response.media_type
-    assert_match(/ActionDispatch::Http::MimeNegotiation::InvalidType/, body)
+    assert_match(/ActionDispatch::Request::MimeNegotiation::InvalidType/, body)
   end
 
   test "rescue with suggestions" do
@@ -556,13 +556,13 @@ class DebugExceptionsTest < ActionDispatch::IntegrationTest
             "action_dispatch.log_rescued_responses" => true,
             "action_dispatch.backtrace_cleaner"     => backtrace_cleaner }
 
-    assert_raises ActionDispatch::Http::MimeNegotiation::InvalidType do
+    assert_raises ActionDispatch::Request::MimeNegotiation::InvalidType do
       get "/invalid_mimetype", headers: env
     end
 
     log = output.rewind && output.read
 
-    assert_includes log, "ActionDispatch::Http::MimeNegotiation::InvalidType (ActionDispatch::Http::MimeNegotiation::InvalidType)"
+    assert_includes log, "ActionDispatch::Request::MimeNegotiation::InvalidType (ActionDispatch::Request::MimeNegotiation::InvalidType)"
     assert_equal 3, log.lines.count
   end
 

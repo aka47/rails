@@ -64,7 +64,7 @@ class RescueController < ActionController::Base
     render plain: exception.message
   end
 
-  rescue_from ActionDispatch::Http::Parameters::ParseError do
+  rescue_from ActionDispatch::Request::Parameters::ParseError do
     render plain: "parse error", status: :bad_request
   end
 

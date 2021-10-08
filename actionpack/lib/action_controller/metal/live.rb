@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "action_dispatch/http/response"
+require "action_dispatch/response"
 require "delegate"
 require "active_support/json"
 

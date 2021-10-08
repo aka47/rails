@@ -292,7 +292,7 @@ module ActionController
         ref = request.content_mime_type.ref
 
         _wrapper_formats.include?(ref) && _wrapper_key && !request.parameters.key?(_wrapper_key)
-      rescue ActionDispatch::Http::Parameters::ParseError
+      rescue ActionDispatch::Request::Parameters::ParseError
         false
       end
 

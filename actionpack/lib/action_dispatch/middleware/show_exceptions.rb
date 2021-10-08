@@ -60,7 +60,7 @@ module ActionDispatch
         # @exceptions_app may not be able to handle it. To make it
         # easier to handle, we switch to HTML.
         request.formats
-      rescue ActionDispatch::Http::MimeNegotiation::InvalidType
+      rescue ActionDispatch::Request::MimeNegotiation::InvalidType
         request.set_header "HTTP_ACCEPT", "text/html"
       end
 

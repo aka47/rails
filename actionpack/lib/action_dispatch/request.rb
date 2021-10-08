@@ -7,10 +7,10 @@ require "action_dispatch/http/headers"
 require "action_controller/metal/exceptions"
 require "rack/request"
 require "action_dispatch/http/cache"
-require "action_dispatch/http/mime_negotiation"
-require "action_dispatch/http/parameters"
-require "action_dispatch/http/filter_parameters"
 require "action_dispatch/http/upload"
+require "action_dispatch/request/parameters"
+require "action_dispatch/request/mime_negotiation"
+require "action_dispatch/request/filter_parameters"
 require "action_dispatch/request/build_url_from_request"
 require "active_support/core_ext/array/conversions"
 
@@ -18,9 +18,9 @@ module ActionDispatch
   class Request
     include Rack::Request::Helpers
     include ActionDispatch::Http::Cache::Request
-    include ActionDispatch::Http::MimeNegotiation
-    include ActionDispatch::Http::Parameters
-    include ActionDispatch::Http::FilterParameters
+    include ActionDispatch::Request::Parameters
+    include ActionDispatch::Request::MimeNegotiation
+    include ActionDispatch::Request::FilterParameters
     include ActionDispatch::Request::BuildUrlFromRequest
     include ActionDispatch::ContentSecurityPolicy::Request
     include ActionDispatch::PermissionsPolicy::Request

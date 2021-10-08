@@ -3,7 +3,7 @@
 require "active_support/parameter_filter"
 
 module ActionDispatch
-  module Http
+  class Request
     # Allows you to specify sensitive parameters which will be replaced from
     # the request log by looking in the query string of the request and all
     # sub-hashes of the params hash to filter. Filtering only certain sub-keys
@@ -46,7 +46,7 @@ module ActionDispatch
       # Returns a hash of parameters with all sensitive data replaced.
       def filtered_parameters
         @filtered_parameters ||= parameter_filter.filter(parameters)
-      rescue ActionDispatch::Http::Parameters::ParseError
+      rescue ActionDispatch::Request::Parameters::ParseError
         @filtered_parameters = {}
       end
 

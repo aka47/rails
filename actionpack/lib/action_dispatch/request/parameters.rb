@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module ActionDispatch
-  module Http
+  class Request
     module Parameters
       extend ActiveSupport::Concern
 
